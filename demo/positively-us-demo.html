@@ -1,0 +1,613 @@
+<title>Positively Us</title>
+<style>
+  :root {
+    --pink: #ff4d8d; --purple: #7b61ff; --teal: #00d1c1; --amber: #ffb347;
+    --pink-2: #ff7ac8; --navy: #1a1b2e;
+    --bg: #101120; --bg-2: #16182b; --card: #1f2138; --card-2: #262a45;
+    --line: #313456; --text: #f4f3fb; --muted: #a7a8c4; --danger: #ff6b6b; --ok: #58d68d;
+    --grad: linear-gradient(135deg, var(--pink), var(--purple));
+    --grad-3: linear-gradient(120deg, var(--pink), var(--purple), var(--teal));
+    --radius: 18px; --shadow: 0 18px 50px rgba(0,0,0,.5);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: radial-gradient(900px 700px at 80% -10%, #241f45 0%, #0b0c16 55%);
+    color: var(--text); min-height: 100vh; line-height: 1.5; -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--purple); }
+  button { font: inherit; cursor: pointer; }
+  h1, h2, h3 { letter-spacing: -.02em; }
+
+  .logo-mark { display: inline-block; vertical-align: middle; }
+  .wordmark { font-weight: 800; letter-spacing: -.03em; }
+  .wordmark .us { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; font-style: italic; }
+
+  .btn { border: none; border-radius: 999px; padding: 13px 22px; font-weight: 700; color: #fff;
+    background: var(--grad); box-shadow: 0 8px 22px rgba(255,77,141,.28); transition: transform .08s ease, opacity .15s ease; }
+  .btn:active { transform: scale(.98); }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+  .btn.ghost { background: transparent; color: var(--text); border: 1px solid var(--line); box-shadow: none; }
+  .btn.block { width: 100%; }
+  .btn.sm { padding: 9px 16px; font-size: 14px; }
+  .btn:focus-visible, .chip:focus-visible, .icon-btn:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { border: 1px solid var(--line); background: var(--bg-2); color: var(--muted); border-radius: 999px;
+    padding: 7px 14px; font-size: 13px; font-weight: 600; transition: all .12s ease; }
+  .chip.on { color: #fff; background: var(--grad); border-color: transparent; }
+  .tag { display: inline-block; background: var(--card-2); border: 1px solid var(--line); color: var(--pink-2);
+    border-radius: 999px; padding: 3px 11px; font-size: 12px; font-weight: 600; margin: 2px 2px 0 0; }
+  .tag.interest { color: var(--teal); }
+  .pill-uu { display: inline-flex; align-items: center; gap: 5px; background: rgba(0,209,193,.14);
+    border: 1px solid rgba(0,209,193,.5); color: var(--teal); font-weight: 700; font-size: 12px; border-radius: 999px; padding: 4px 10px; }
+  .verified { color: var(--teal); font-size: .9em; }
+
+  label { display: block; font-weight: 600; font-size: 13px; color: var(--muted); margin: 14px 0 6px; }
+  input, textarea, select { width: 100%; background: var(--bg-2); border: 1px solid var(--line); color: var(--text);
+    border-radius: 12px; padding: 12px; font: inherit; }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--purple); }
+  textarea { resize: vertical; min-height: 84px; }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .row > * { flex: 1; min-width: 150px; }
+  .hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .error { background: rgba(255,107,107,.12); border: 1px solid rgba(255,107,107,.4); color: #ffc9c9;
+    padding: 10px 12px; border-radius: 12px; margin: 12px 0; font-size: 14px; }
+  .notice { background: rgba(0,209,193,.1); border: 1px solid rgba(0,209,193,.35); color: #bff6ea;
+    padding: 10px 12px; border-radius: 12px; font-size: 14px; }
+
+  /* App shell */
+  .app { max-width: 460px; margin: 0 auto; min-height: 100vh; background: var(--bg); position: relative;
+    display: flex; flex-direction: column; border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
+  .app-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px;
+    border-bottom: 1px solid var(--line); background: rgba(16,17,32,.9); position: sticky; top: 0; z-index: 20; }
+  .app-head .brand-row .wordmark { font-size: 18px; }
+  .app-head .h-actions { display: flex; align-items: center; gap: 6px; }
+  .brand-row { display: flex; align-items: center; gap: 10px; }
+  .icon-btn { background: transparent; border: none; color: var(--muted); font-size: 20px; padding: 6px; border-radius: 10px; }
+  .icon-btn:hover { color: var(--text); }
+  .screen { flex: 1; padding: 18px; padding-bottom: 96px; overflow-y: auto; }
+  .bottomnav { position: sticky; bottom: 0; display: grid; grid-template-columns: repeat(5,1fr);
+    background: rgba(22,24,43,.97); border-top: 1px solid var(--line); z-index: 20; }
+  .bottomnav button { background: transparent; border: none; color: var(--muted); padding: 10px 0 12px;
+    display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 10px; font-weight: 600; position: relative; }
+  .bottomnav button .ic { font-size: 20px; line-height: 1; }
+  .bottomnav button.active { color: var(--pink); }
+
+  .greet-card { background: var(--grad); border-radius: var(--radius); padding: 20px; position: relative; overflow: hidden; box-shadow: var(--shadow); }
+  .greet-card::after { content: "💜"; position: absolute; right: -6px; bottom: -14px; font-size: 90px; opacity: .25; }
+  .greet-card h2 { margin: 0 0 4px; font-size: 22px; }
+  .greet-card p { margin: 0 0 16px; color: rgba(255,255,255,.9); font-size: 14px; }
+  .greet-card .btn { background: #fff; color: var(--purple); box-shadow: none; }
+  .stat-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin: 16px 0; }
+  .stat { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px 6px; text-align: center; }
+  .stat .ic { font-size: 20px; }
+  .stat .num { font-weight: 800; font-size: 18px; margin-top: 2px; }
+  .stat .lbl { font-size: 10px; color: var(--muted); line-height: 1.2; }
+  .section-head { display: flex; align-items: center; justify-content: space-between; margin: 22px 0 12px; }
+  .section-head h3 { margin: 0; font-size: 16px; }
+  .section-head a { font-size: 13px; font-weight: 600; cursor: pointer; }
+  .spotlight { display: flex; gap: 12px; align-items: center; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
+  .spotlight .emoji { font-size: 28px; }
+  .spotlight h4 { margin: 0 0 2px; font-size: 15px; }
+  .spotlight p { margin: 0; font-size: 12px; color: var(--muted); }
+  .event-item { display: flex; gap: 12px; align-items: center; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; margin-bottom: 10px; }
+  .event-item .emoji { width: 46px; height: 46px; border-radius: 12px; background: var(--bg-2); display: grid; place-items: center; font-size: 22px; flex-shrink: 0; }
+  .event-item h4 { margin: 0 0 2px; font-size: 14px; }
+  .event-item .when { font-size: 12px; color: var(--amber); font-weight: 600; }
+  .event-item .blurb { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .pcard { background: linear-gradient(180deg, var(--card-2), var(--card)); border: 1px solid var(--line); border-radius: 24px; overflow: hidden; box-shadow: var(--shadow); }
+  .pcard .photo { position: relative; height: 300px; display: grid; place-items: center; font-size: 120px; background: radial-gradient(circle at 40% 30%, #3a2f6e, #241c44); }
+  .pcard .photo .top-badges { position: absolute; top: 14px; left: 14px; right: 14px; display: flex; justify-content: space-between; }
+  .badge-soft { background: rgba(0,0,0,.5); border-radius: 999px; padding: 5px 11px; font-size: 12px; font-weight: 700; display: inline-flex; gap: 5px; align-items: center; }
+  .pcard .info { padding: 18px; }
+  .pcard .name { font-size: 24px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+  .pcard .sub { color: var(--muted); font-size: 14px; margin: 2px 0 10px; }
+  .pcard .status-line { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+  .block-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; font-weight: 700; margin: 12px 0 6px; }
+  .pcard .bio { font-size: 14px; margin: 2px 0; }
+  .actions { display: flex; gap: 16px; justify-content: center; margin: 18px 0 4px; }
+  .circle-btn { width: 62px; height: 62px; border-radius: 50%; border: 1px solid var(--line); background: var(--card); font-size: 26px; display: grid; place-items: center; transition: transform .1s ease; }
+  .circle-btn:hover { transform: scale(1.08); }
+  .circle-btn.pass { color: var(--danger); }
+  .circle-btn.like { color: var(--pink); border-color: var(--pink); box-shadow: 0 6px 18px rgba(255,77,141,.3); }
+
+  .overlay { position: fixed; inset: 0; background: rgba(10,10,20,.8); display: grid; place-items: center; z-index: 50; padding: 24px; }
+  .match-modal { background: var(--card); border: 1px solid var(--line); border-radius: 24px; padding: 30px 24px; text-align: center; max-width: 360px; width: 100%; box-shadow: var(--shadow); }
+  .match-modal h2 { font-size: 28px; background: var(--grad-3); -webkit-background-clip: text; background-clip: text; color: transparent; margin: 0 0 6px; }
+  .match-avatars { display: flex; justify-content: center; align-items: center; margin: 20px 0; position: relative; }
+  .match-avatars .av { width: 96px; height: 96px; border-radius: 50%; display: grid; place-items: center; font-size: 46px; background: var(--bg-2); border: 3px solid var(--pink); }
+  .match-avatars .av:last-child { border-color: var(--purple); margin-left: -18px; }
+  .match-avatars .heart { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 40px; height: 40px; border-radius: 50%; background: var(--grad); display: grid; place-items: center; font-size: 18px; z-index: 2; }
+  .shared { text-align: left; margin: 16px 0; display: flex; flex-direction: column; gap: 8px; }
+  .shared .item { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+  .shared .item .b { width: 32px; height: 32px; border-radius: 8px; background: var(--bg-2); display: grid; place-items: center; }
+
+  .card-soft { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px; }
+  .res-item { display: flex; gap: 12px; align-items: flex-start; padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .res-item:last-child { border-bottom: none; }
+  .res-item .emoji { font-size: 24px; }
+  .res-item h4 { margin: 0 0 2px; font-size: 14px; }
+  .res-item p { margin: 0; font-size: 12px; color: var(--muted); }
+  .group-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .group { display: flex; align-items: center; gap: 10px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px; }
+  .group .emoji { font-size: 22px; }
+  .group .name { font-size: 13px; font-weight: 700; }
+  .group .cnt { font-size: 11px; color: var(--muted); }
+
+  .stories { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 6px; }
+  .story { text-align: center; flex-shrink: 0; width: 62px; background: transparent; border: none; padding: 0; }
+  .story .ring { width: 58px; height: 58px; border-radius: 50%; padding: 2px; background: var(--grad); display: grid; place-items: center; }
+  .story .ring .inner { width: 100%; height: 100%; border-radius: 50%; background: var(--bg-2); display: grid; place-items: center; font-size: 26px; }
+  .story .lbl { font-size: 11px; color: var(--muted); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .search-box { position: relative; margin-bottom: 6px; }
+  .search-box input { padding-left: 38px; border-radius: 999px; }
+  .search-box .mag { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); }
+  .conv { display: flex; align-items: center; gap: 12px; padding: 12px 6px; border-bottom: 1px solid var(--line); width: 100%; background: transparent; border-left: none; border-right: none; border-top: none; text-align: left; color: var(--text); }
+  .conv .av { width: 50px; height: 50px; border-radius: 50%; display: grid; place-items: center; font-size: 24px; background: var(--bg-2); flex-shrink: 0; }
+  .conv .who { font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 5px; }
+  .conv .snippet { font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 230px; }
+  .conv .meta { margin-left: auto; text-align: right; flex-shrink: 0; }
+  .conv .time { font-size: 11px; color: var(--muted); }
+  .conv .unread { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 999px; background: var(--pink); color: #fff; font-size: 11px; font-weight: 700; margin-top: 4px; }
+
+  .chat-head { display: flex; align-items: center; gap: 10px; padding: 4px 0 14px; border-bottom: 1px solid var(--line); margin-bottom: 12px; }
+  .chat-head .av { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; font-size: 22px; background: var(--bg-2); }
+  .messages { display: flex; flex-direction: column; gap: 8px; min-height: 40vh; }
+  .bubble { max-width: 76%; padding: 10px 14px; border-radius: 16px; font-size: 14px; }
+  .bubble.me { align-self: flex-end; background: var(--grad); color: #fff; border-bottom-right-radius: 5px; }
+  .bubble.them { align-self: flex-start; background: var(--bg-2); border: 1px solid var(--line); border-bottom-left-radius: 5px; }
+  .chat-input { display: flex; gap: 8px; position: sticky; bottom: 0; padding-top: 10px; background: var(--bg); }
+  .chat-input input { flex: 1; border-radius: 999px; }
+
+  .prof-hero { text-align: center; padding: 6px 0 4px; }
+  .prof-hero .av { width: 96px; height: 96px; margin: 0 auto 8px; border-radius: 50%; display: grid; place-items: center; font-size: 46px; background: var(--bg-2); border: 2px solid var(--line); }
+  .emoji-picker { display: flex; flex-wrap: wrap; gap: 6px; }
+  .emoji-picker button { font-size: 24px; background: var(--bg-2); border: 1px solid var(--line); border-radius: 10px; padding: 6px 10px; }
+  .emoji-picker button.on { border-color: var(--purple); background: var(--card-2); }
+  .consent { display: flex; gap: 10px; align-items: flex-start; background: rgba(255,179,71,.08); border: 1px solid rgba(255,179,71,.3); border-radius: 12px; padding: 12px; margin-top: 14px; }
+  .consent input { width: auto; margin-top: 3px; }
+  .consent label { margin: 0; color: var(--text); font-weight: 500; font-size: 13px; }
+  .toggle { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+  .toggle input { width: auto; }
+  .empty { text-align: center; color: var(--muted); padding: 50px 20px; }
+  .empty .big { font-size: 46px; margin-bottom: 10px; }
+  .center { display: grid; place-items: center; min-height: 70vh; }
+  .auth-tabs { display: flex; gap: 6px; margin-bottom: 6px; }
+  .auth-tabs button { flex: 1; background: transparent; border: 1px solid var(--line); color: var(--muted); padding: 11px; border-radius: 12px; font-weight: 700; }
+  .auth-tabs button.active { color: #fff; background: var(--card-2); }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow); }
+
+  .demobar { max-width: 460px; margin: 0 auto; padding: 8px 14px; font-size: 12px; color: var(--muted);
+    text-align: center; background: rgba(123,97,255,.12); border-bottom: 1px solid var(--line); }
+  .demobar b { color: var(--pink-2); }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="demobar">✨ Interactive demo — data lives in your browser and resets on refresh. <b>Tap “Explore the demo”</b> to jump in.</div>
+<div id="app"></div>
+
+<script>
+(function () {
+  const appEl = document.getElementById('app');
+
+  // ---------------- In-memory demo backend ----------------
+  const META = {
+    conditions: ['Herpes (HSV-1)','Herpes (HSV-2)','HPV','HIV','Hepatitis B','Hepatitis C','Chlamydia','Gonorrhea','Syphilis','Trichomoniasis','Molluscum contagiosum','Other'],
+    genders: ['Woman','Man','Non-binary','Transgender woman','Transgender man','Genderfluid','Agender','Other'],
+    pronouns: ['she/her','he/him','they/them','she/they','he/they','ze/zir','Ask me'],
+    orientations: ['Straight','Gay','Lesbian','Bisexual','Pansexual','Queer','Asexual','Questioning'],
+    interests: ['Hiking','Coffee','Music','Art','Yoga','Cooking','Travel','Gaming','Reading','Movies','Fitness','Dogs','Cats','Photography','Dancing','Foodie','Live shows','Volunteering','Nature','Tech'],
+    lookingFor: ['A long-term relationship','Something casual','New friendships','Community & support','Still figuring it out'],
+    uuCondition: 'HIV', minAge: 21,
+  };
+
+  const DB = {
+    users: [
+      { id:1, email:'alex@example.com', name:'Alex', birthdate:'1996-03-11', gender:'Non-binary', pronouns:'they/them', seeking:['Woman','Man','Non-binary'], orientation:'Queer', location:'Los Angeles, USA', bio:'Dog lover 🐶, coffee addict ☕, sunrise chaser 🌅, and always down for a deep conversation.', conditions:['HIV'], undetectable:true, interests:['Hiking','Coffee','Music','Art','Yoga','Cooking'], lookingFor:['A long-term relationship','New friendships'], verified:true, emoji:'🌈' },
+      { id:2, email:'jordan@example.com', name:'Jordan', birthdate:'1990-09-01', gender:'Man', pronouns:'he/him', seeking:['Woman','Non-binary'], orientation:'Bisexual', location:'Los Angeles, USA', bio:'Software dev by day, home cook by night. Living well and undetectable.', conditions:['HIV'], undetectable:true, interests:['Hiking','Coffee','Music','Gaming','Foodie'], lookingFor:['A long-term relationship'], verified:true, emoji:'🎧' },
+      { id:3, email:'maya@example.com', name:'Maya', birthdate:'1994-04-12', gender:'Woman', pronouns:'she/her', seeking:['Man','Non-binary'], orientation:'Bisexual', location:'Austin, USA', bio:'Yoga teacher, plant hoarder, and terrible at board games. HSV-2, stigma-free zone.', conditions:['Herpes (HSV-2)'], undetectable:false, interests:['Yoga','Nature','Cooking','Travel','Dogs'], lookingFor:['Community & support','New friendships'], verified:true, emoji:'🌻' },
+      { id:4, email:'sam@example.com', name:'Sam', birthdate:'1996-02-20', gender:'Non-binary', pronouns:'they/them', seeking:['Woman','Non-binary','Man'], orientation:'Pansexual', location:'Portland, USA', bio:'Illustrator and dog parent. Big believer in honesty and soft launches.', conditions:['HPV'], undetectable:false, interests:['Art','Photography','Dogs','Movies','Live shows'], lookingFor:['Something casual','New friendships'], verified:false, emoji:'🦋' },
+      { id:5, email:'lena@example.com', name:'Lena', birthdate:'1988-11-30', gender:'Woman', pronouns:'she/her', seeking:['Woman'], orientation:'Lesbian', location:'Chicago, USA', bio:'Nurse, marathoner, and matcha addict. HSV-1, managed and open about it.', conditions:['Herpes (HSV-1)'], undetectable:false, interests:['Fitness','Reading','Coffee','Travel','Cooking'], lookingFor:['A long-term relationship'], verified:true, emoji:'🏃' },
+      { id:6, email:'theo@example.com', name:'Theo', birthdate:'1992-07-08', gender:'Man', pronouns:'he/him', seeking:['Woman','Non-binary'], orientation:'Straight', location:'Denver, USA', bio:'Rock climber and amateur baker. Managing Hep B — happy to talk about it openly.', conditions:['Hepatitis B'], undetectable:false, interests:['Fitness','Cooking','Nature','Music','Foodie'], lookingFor:['A long-term relationship','New friendships'], verified:false, emoji:'🧗' },
+    ],
+    likes: [
+      { liker:1, likee:2, pass:false }, { liker:2, likee:1, pass:false }, // Alex ↔ Jordan matched
+      { liker:3, likee:1, pass:false }, // Maya likes Alex
+      { liker:4, likee:1, pass:false }, // Sam likes Alex
+    ],
+    messages: [
+      { sender:2, receiver:1, body:'Hey! How was your weekend? 😊', read:false, at: Date.now()-1000*60*90 },
+    ],
+    visits: [ { viewer:2, viewed:1 }, { viewer:5, viewed:1 } ],
+    session: null,
+    nextId: 100,
+  };
+
+  const nowISO = () => new Date().toISOString().replace('T',' ').slice(0,19);
+  function ageFrom(bd) {
+    const d = new Date(bd + 'T00:00:00'); if (isNaN(d)) return NaN;
+    const n = new Date(); let a = n.getFullYear()-d.getFullYear();
+    const m = n.getMonth()-d.getMonth(); if (m<0||(m===0&&n.getDate()<d.getDate())) a--; return a;
+  }
+  const uById = (id) => DB.users.find(u => u.id === id);
+  function card(u) {
+    return { id:u.id, displayName:u.name, age:ageFrom(u.birthdate), gender:u.gender, pronouns:u.pronouns,
+      orientation:u.orientation, location:u.location, bio:u.bio, conditions:u.conditions.slice(),
+      undetectable:!!u.undetectable, interests:u.interests.slice(), lookingFor:u.lookingFor.slice(),
+      verified:!!u.verified, photoEmoji:u.emoji };
+  }
+  function publicUser(u) { const c = card(u); c.email = u.email; c.seeking = u.seeking.slice(); return c; }
+  const matchedPair = (a,b) =>
+    DB.likes.some(l=>l.liker===a&&l.likee===b&&!l.pass) && DB.likes.some(l=>l.liker===b&&l.likee===a&&!l.pass);
+
+  // Mock API mirroring the real server routes.
+  function api(path, opts) {
+    opts = opts || {}; const body = opts.body || {}; const me = DB.session;
+    const seg = path.split('/').filter(Boolean); // e.g. ['messages','2']
+    const need = () => { if (!me) throw new Error('Not signed in.'); };
+
+    if (path === '/meta') return META;
+
+    if (path === '/auth/register') {
+      const b = body;
+      if (!b.email||!b.password||!b.displayName||!b.birthdate||!b.gender) throw new Error('Please fill in all required fields.');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(b.email)) throw new Error('Please enter a valid email address.');
+      if (String(b.password).length < 8) throw new Error('Password must be at least 8 characters.');
+      if (!b.ageConfirm) throw new Error('You must confirm you are 21 or older.');
+      if (!(ageFrom(b.birthdate) >= 21)) throw new Error('You must be at least 21 years old to join Positively Us.');
+      if (!(b.seeking||[]).length) throw new Error('Please choose who you are open to meeting.');
+      if (!(b.conditions||[]).filter(Boolean).length) throw new Error('Disclosure is required. Please share at least one status (or your own note) so members can make informed, respectful choices.');
+      if (DB.users.some(u=>u.email===b.email.toLowerCase())) throw new Error('An account with that email already exists.');
+      const u = { id: DB.nextId++, email:b.email.toLowerCase(), name:b.displayName.slice(0,40), birthdate:b.birthdate,
+        gender:b.gender, pronouns:b.pronouns||'', seeking:b.seeking, orientation:b.orientation||'', location:b.location||'',
+        bio:b.bio||'', conditions:b.conditions.filter(Boolean), undetectable: b.conditions.includes('HIV') && !!b.undetectable,
+        interests:(b.interests||[]).slice(0,12), lookingFor:(b.lookingFor||[]).slice(0,6), verified:false, emoji:b.photoEmoji||'🙂' };
+      DB.users.push(u); DB.session = u; return { user: publicUser(u) };
+    }
+    if (path === '/auth/login') {
+      const u = DB.users.find(x=>x.email===String(body.email||'').toLowerCase());
+      if (!u || String(body.password) !== 'password123') throw new Error('Incorrect email or password. (Demo password: password123)');
+      DB.session = u; return { user: publicUser(u) };
+    }
+    if (path === '/auth/logout') { DB.session = null; return { ok:true }; }
+    if (path === '/auth/me' && (opts.method||'GET')==='GET') { need(); return { user: publicUser(me) }; }
+    if (path === '/auth/me' && opts.method==='PATCH') {
+      need(); const b = body;
+      if (b.conditions!==undefined) { const c=(b.conditions||[]).filter(Boolean); if(!c.length) throw new Error('Disclosure cannot be removed entirely.'); me.conditions=c; }
+      if (b.seeking!==undefined) { const s=b.seeking||[]; if(!s.length) throw new Error('Please choose who you are open to meeting.'); me.seeking=s; }
+      if (b.bio!==undefined) me.bio=b.bio; if (b.location!==undefined) me.location=b.location;
+      if (b.orientation!==undefined) me.orientation=b.orientation; if (b.pronouns!==undefined) me.pronouns=b.pronouns;
+      if (b.interests!==undefined) me.interests=b.interests.slice(0,12);
+      if (b.lookingFor!==undefined) me.lookingFor=b.lookingFor.slice(0,6);
+      if (b.photoEmoji!==undefined) me.emoji=b.photoEmoji||'🙂';
+      me.undetectable = me.conditions.includes('HIV') && (b.undetectable!==undefined ? !!b.undetectable : !!me.undetectable);
+      return { user: publicUser(me) };
+    }
+
+    if (path === '/discovery') {
+      need();
+      const acted = new Set(DB.likes.filter(l=>l.liker===me.id).map(l=>l.likee));
+      const cands = DB.users.filter(u => u.id!==me.id && !acted.has(u.id)).filter(u => {
+        const iWant = !me.seeking.length || me.seeking.includes(u.gender);
+        const theyWant = !u.seeking.length || u.seeking.includes(me.gender);
+        return iWant && theyWant;
+      });
+      return { candidates: cands.map(card) };
+    }
+    if (path === '/dashboard') {
+      need();
+      const actedBack = new Set(DB.likes.filter(l=>l.liker===me.id).map(l=>l.likee));
+      const whoLikesYou = DB.likes.filter(l=>l.likee===me.id && !l.pass && !actedBack.has(l.liker)).length;
+      const matches = DB.users.filter(u=>matchedPair(me.id,u.id)).length;
+      const visitors = new Set(DB.visits.filter(v=>v.viewed===me.id).map(v=>v.viewer)).size;
+      const unread = DB.messages.filter(m=>m.receiver===me.id && !m.read).length;
+      return { displayName: me.name, stats: { whoLikesYou, matches, visitors, unread } };
+    }
+    if (path === '/likes') {
+      need(); const likeeId = Number(body.userId); const pass = !!body.pass;
+      const target = uById(likeeId); if (!target) throw new Error('User not found.');
+      if (!DB.visits.some(v=>v.viewer===me.id&&v.viewed===likeeId)) DB.visits.push({ viewer:me.id, viewed:likeeId });
+      let e = DB.likes.find(l=>l.liker===me.id&&l.likee===likeeId);
+      if (e) e.pass = pass; else DB.likes.push({ liker:me.id, likee:likeeId, pass });
+      let matched=false, matchUser=null;
+      if (!pass && matchedPair(me.id, likeeId)) {
+        matched=true; const shared = me.interests.filter(i=>target.interests.includes(i));
+        matchUser = { id:target.id, displayName:target.name, photoEmoji:target.emoji, sharedInterests:shared };
+      }
+      return { ok:true, matched, matchUser };
+    }
+    if (path === '/matches') {
+      need();
+      const rows = DB.users.filter(u=>matchedPair(me.id,u.id));
+      const matches = rows.map(u => {
+        const msgs = DB.messages.filter(m=>(m.sender===me.id&&m.receiver===u.id)||(m.sender===u.id&&m.receiver===me.id));
+        const last = msgs.length ? msgs[msgs.length-1] : null;
+        const unread = DB.messages.filter(m=>m.sender===u.id&&m.receiver===me.id&&!m.read).length;
+        return { id:u.id, displayName:u.name, age:ageFrom(u.birthdate), gender:u.gender, pronouns:u.pronouns,
+          location:u.location, conditions:u.conditions.slice(), undetectable:!!u.undetectable, verified:!!u.verified,
+          photoEmoji:u.emoji, sharedInterests: me.interests.filter(i=>u.interests.includes(i)),
+          lastMessage: last?last.body:null, lastMessageAt: last? new Date(last.at).toISOString().replace('T',' ').slice(0,19):null, unread };
+      }).sort((a,b)=>a.displayName.localeCompare(b.displayName));
+      return { matches };
+    }
+    if (seg[0] === 'messages') {
+      need(); const otherId = Number(seg[1]); if (!uById(otherId)) throw new Error('Invalid user.');
+      if (!matchedPair(me.id, otherId)) throw new Error('You can only message people you have matched with.');
+      if ((opts.method||'GET')==='GET') {
+        DB.messages.forEach(m=>{ if(m.sender===otherId&&m.receiver===me.id) m.read=true; });
+        const list = DB.messages.filter(m=>(m.sender===me.id&&m.receiver===otherId)||(m.sender===otherId&&m.receiver===me.id))
+          .sort((a,b)=>a.at-b.at).map(m=>({ id:m.at, fromMe:m.sender===me.id, body:m.body }));
+        return { messages: list };
+      }
+      const b = String(body.body||'').trim(); if (!b) throw new Error('Message cannot be empty.');
+      DB.messages.push({ sender:me.id, receiver:otherId, body:b, read:false, at:Date.now() });
+      return { message: { fromMe:true, body:b } };
+    }
+    if (path === '/community') {
+      need();
+      return {
+        events: [
+          { id:'mixer', emoji:'🎉', title:'Positively Us Virtual Mixer', date:'May 25 · 7:00 PM', blurb:'Make friends. Have fun. A relaxed video hangout — no pressure, all welcome.', tag:'Social' },
+          { id:'uu', emoji:'💬', title:'U=U: Ask the Experts', date:'Jun 3 · 6:00 PM', blurb:'A live Q&A with an HIV specialist on Undetectable = Untransmittable.', tag:'Education' },
+          { id:'sup', emoji:'🫂', title:'Newly Diagnosed Support Circle', date:'Jun 8 · 5:30 PM', blurb:'A warm, moderated peer space for anyone recently diagnosed.', tag:'Support' },
+          { id:'walk', emoji:'🌳', title:'Community Walk & Coffee', date:'Jun 15 · 10:00 AM', blurb:'Meet members in person for an easy morning walk and coffee.', tag:'Social' },
+        ],
+        resources: [
+          { id:'r1', emoji:'💜', title:'U=U: What It Means', blurb:'Undetectable = Untransmittable. People living with HIV who take treatment and reach an undetectable viral load cannot sexually transmit HIV.', tag:'HIV education' },
+          { id:'r2', emoji:'🗣️', title:'Talking About Your Status', blurb:'Tips for confident, healthy conversations about your status — on your terms.', tag:'Guides' },
+          { id:'r3', emoji:'🧪', title:'Testing & Prevention', blurb:'PrEP, PEP, regular testing, and safer-sex basics explained plainly.', tag:'Health' },
+          { id:'r4', emoji:'🤝', title:'Find Support', blurb:'Peer groups and helplines for whenever you need someone in your corner.', tag:'Support' },
+        ],
+        groups: [
+          { id:'g1', emoji:'🌈', name:'LGBTQ+ Connect', members:1240 },
+          { id:'g2', emoji:'🧘', name:'Wellness & Mindfulness', members:860 },
+          { id:'g3', emoji:'🍳', name:'Foodies & Cooks', members:540 },
+          { id:'g4', emoji:'🎮', name:'Gamers Lounge', members:720 },
+        ],
+      };
+    }
+    throw new Error('Unknown route: ' + path);
+  }
+
+  // ---------------- UI (same structure as the real app) ----------------
+  const state = { user:null, meta:META, screen:'home', chatWith:null, data:{} };
+
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const HEART = 'M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z';
+  function logo(h) { h=h||26; const id='g'+Math.random().toString(36).slice(2,7);
+    return `<svg class="logo-mark" width="${h*1.55}" height="${h}" viewBox="0 0 48 32" aria-hidden="true">
+      <defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF4D8D"/><stop offset="1" stop-color="#7B61FF"/></linearGradient></defs>
+      <path d="${HEART}" transform="translate(2 3) scale(0.62)" fill="none" stroke="#FF4D8D" stroke-width="3.2" stroke-linejoin="round"/>
+      <path d="${HEART}" transform="translate(19 3) scale(0.62)" fill="none" stroke="#7B61FF" stroke-width="3.2" stroke-linejoin="round"/>
+      <path d="${HEART}" transform="translate(13.5 9) scale(0.34)" fill="url(#${id})"/></svg>`; }
+  const wordmark = () => `<span class="wordmark">Positively <span class="us">Us</span></span>`;
+  const vMark = (v) => v ? '<span class="verified" title="Verified">✔︎</span>' : '';
+  function toggle(a,v){ const i=a.indexOf(v); if(i>=0) a.splice(i,1); else a.push(v); }
+  function timeAgo(iso){ if(!iso) return ''; const s=(Date.now()-new Date(iso.replace(' ','T')+'Z').getTime())/1000;
+    if(s<60) return 'now'; if(s<3600) return Math.floor(s/60)+'m'; if(s<86400) return Math.floor(s/3600)+'h'; return Math.floor(s/86400)+'d'; }
+  function go(screen){ state.screen=screen; state.chatWith=null; render(); }
+
+  function render() {
+    if (!state.user) return renderLanding();
+    appEl.innerHTML = `<div class="app">${appHeader()}<div class="screen" id="screen"></div>${bottomNav()}</div>`;
+    document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.tab)));
+    const bell=document.querySelector('[data-bell]'); if(bell) bell.addEventListener('click',()=>go('messages'));
+    const s = document.getElementById('screen');
+    ({ home:renderHome, discover:renderDiscover, community:renderCommunity, messages:renderMessages, profile:renderProfile }[state.screen] || renderHome)(s);
+  }
+  function appHeader(){ return `<div class="app-head"><div class="brand-row">${logo(24)} ${wordmark()}</div>
+    <div class="h-actions"><button class="icon-btn" data-bell title="Messages">🔔</button></div></div>`; }
+  function bottomNav(){ const items=[['home','🏠','Home'],['discover','🔍','Discover'],['community','👥','Community'],['messages','💬','Messages'],['profile','👤','Profile']];
+    return `<div class="bottomnav">${items.map(([k,ic,l])=>`<button data-tab="${k}" class="${state.screen===k?'active':''}"><span class="ic">${ic}</span>${l}</button>`).join('')}</div>`; }
+
+  // Landing + auth
+  function renderLanding(){
+    const welcome=['Gay','Lesbian','Bisexual','Straight','Transgender','Nonbinary','Queer','Everyone'];
+    appEl.innerHTML = `
+      <div style="max-width:1040px;margin:0 auto;padding:18px 22px">
+        <div class="brand-row">${logo(30)} <div>${wordmark()}<div style="font-size:11px;color:var(--muted)">Love. Connection. No Shame.</div></div></div>
+        <div style="display:grid;grid-template-columns:1fr;gap:26px;margin-top:20px" id="hero-grid">
+          <div>
+            <div style="display:inline-flex;gap:6px;color:var(--amber);border:1px solid rgba(255,179,71,.4);background:rgba(255,179,71,.08);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:700">🔞 21+ community</div>
+            <h1 style="font-size:34px;line-height:1.05;margin:14px 0">Connect without <span style="background:var(--grad-3);-webkit-background-clip:text;background-clip:text;color:transparent">hiding who you are.</span></h1>
+            <p style="color:var(--muted);font-size:16px;max-width:48ch">A warm, judgment-free dating &amp; social community for adults living with HIV and other STIs — every gender, orientation, and identity welcome. Your status is shared upfront, so you can skip the hard conversation and get to real connection.</p>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px"><span style="color:var(--muted);font-size:13px;align-self:center">Made for everyone:</span>${welcome.map(w=>`<span class="tag" style="color:var(--text)">${w}</span>`).join('')}</div>
+          </div>
+          <div class="card" id="auth-card"></div>
+        </div>
+      </div>`;
+    if (window.matchMedia('(min-width: 860px)').matches) document.getElementById('hero-grid').style.gridTemplateColumns='1.05fr .95fr';
+    renderAuthCard();
+  }
+  function renderAuthCard(){
+    const card=document.getElementById('auth-card'); state.data.authTab=state.data.authTab||'signup'; const tab=state.data.authTab;
+    card.innerHTML = `<div style="text-align:center;margin-bottom:14px">${logo(34)}<div style="margin-top:6px;color:var(--muted);font-size:13px">You belong here. This is a judgment-free space for you.</div></div>
+      <button class="btn block" data-explore style="margin-bottom:12px">✨ Explore the demo</button>
+      <div style="text-align:center;color:var(--muted);font-size:11px;margin-bottom:12px">jumps in as a sample member — no signup needed</div>
+      <div class="auth-tabs"><button data-tab="signup" class="${tab==='signup'?'active':''}">Create Account</button><button data-tab="login" class="${tab==='login'?'active':''}">Log In</button></div>
+      <div id="auth-body"></div>`;
+    card.querySelector('[data-explore]').addEventListener('click', async ()=>{ const {user}=api('/auth/login',{method:'POST',body:{email:'alex@example.com',password:'password123'}}); state.user=user; state.screen='home'; render(); });
+    card.querySelectorAll('.auth-tabs [data-tab]').forEach(b=>b.addEventListener('click',()=>{ state.data.authTab=b.dataset.tab; renderAuthCard(); }));
+    if (tab==='signup') renderSignup(); else renderLogin();
+  }
+  function renderLogin(){
+    document.getElementById('auth-body').innerHTML=`<div id="err"></div>
+      <label>Email</label><input id="l-email" type="email" value="alex@example.com" />
+      <label>Password</label><input id="l-pass" type="password" value="password123" />
+      <div class="hint">Demo accounts: alex@, jordan@, maya@, sam@, lena@, theo@ example.com · password123</div>
+      <div style="height:16px"></div><button class="btn block" id="l-submit">Log In</button>`;
+    document.getElementById('l-submit').addEventListener('click',()=>{ try{ const {user}=api('/auth/login',{method:'POST',body:{email:document.getElementById('l-email').value.trim(),password:document.getElementById('l-pass').value}}); state.user=user; state.screen='home'; render(); }catch(e){ showErr('err',e.message); } });
+  }
+  function chip(v,on,k){ return `<button type="button" class="chip ${on?'on':''}" data-v="${esc(v)}" data-k="${k}">${esc(v)}</button>`; }
+  function wireChips(sel,arr){ document.querySelectorAll(sel+' .chip').forEach(c=>c.addEventListener('click',()=>{ toggle(arr,c.dataset.v); c.classList.toggle('on'); })); }
+  function renderSignup(){
+    const s=state.data.signup=state.data.signup||{seeking:[],conditions:[],interests:[],lookingFor:[],photoEmoji:'🙂',undetectable:false};
+    const emojis=['🙂','😊','😎','🥰','🌻','🦋','🌈','🔥','🎧','📚','🌙','🐱']; const m=state.meta;
+    document.getElementById('auth-body').innerHTML=`<div id="err"></div>
+      <div class="row"><div><label>Display name</label><input id="s-name" maxlength="40"/></div><div><label>Email</label><input id="s-email" type="email"/></div></div>
+      <div class="row"><div><label>Password (8+)</label><input id="s-pass" type="password"/></div><div><label>Date of birth</label><input id="s-dob" type="date"/></div></div>
+      <div class="row"><div><label>I am a…</label><select id="s-gender"><option value="">Select…</option>${m.genders.map(g=>`<option>${esc(g)}</option>`).join('')}</select></div>
+      <div><label>Pronouns</label><select id="s-pron"><option value="">—</option>${m.pronouns.map(p=>`<option>${esc(p)}</option>`).join('')}</select></div></div>
+      <label>Orientation (optional)</label><select id="s-orient"><option value="">—</option>${m.orientations.map(o=>`<option>${esc(o)}</option>`).join('')}</select>
+      <label>Open to meeting</label><div class="chips" id="s-seeking">${m.genders.map(g=>chip(g,s.seeking.includes(g),'g')).join('')}</div>
+      <label>Health disclosure <span style="color:var(--pink)">*required</span></label>
+      <div class="hint">Being upfront is what makes this community work. Select all that apply — this shows on your profile.</div>
+      <div class="chips" id="s-cond" style="margin-top:8px">${m.conditions.map(c=>chip(c,s.conditions.includes(c),'c')).join('')}</div>
+      <div id="s-other-wrap" style="${s.conditions.includes('Other')?'':'display:none'}"><label>Your note</label><input id="s-other" maxlength="60" placeholder="Specify (kept respectful & brief)"/></div>
+      <div id="s-uu-wrap" class="toggle" style="${s.conditions.includes(m.uuCondition)?'':'display:none'}"><input type="checkbox" id="s-uu" ${s.undetectable?'checked':''}/><label for="s-uu" style="margin:0">I'm undetectable (U=U) 💚</label></div>
+      <label>Interests</label><div class="chips" id="s-int">${m.interests.map(i=>chip(i,s.interests.includes(i),'i')).join('')}</div>
+      <label>I'm looking for</label><div class="chips" id="s-lf">${m.lookingFor.map(l=>chip(l,s.lookingFor.includes(l),'l')).join('')}</div>
+      <label>Location (optional)</label><input id="s-loc" maxlength="80" placeholder="City, Country"/>
+      <label>About you (optional)</label><textarea id="s-bio" maxlength="600" placeholder="What are you looking for? What lights you up?"></textarea>
+      <label>Pick an avatar</label><div class="emoji-picker" id="s-emoji">${emojis.map(e=>`<button type="button" class="${s.photoEmoji===e?'on':''}" data-e="${e}">${e}</button>`).join('')}</div>
+      <div class="consent"><input type="checkbox" id="s-age"/><label for="s-age">I confirm I am <b>21 years of age or older</b> and agree to disclose my health status honestly and treat members with respect.</label></div>
+      <div style="height:16px"></div><button class="btn block" id="s-submit">Join Our Community</button>`;
+    wireChips('#s-seeking',s.seeking); wireChips('#s-int',s.interests); wireChips('#s-lf',s.lookingFor);
+    document.querySelectorAll('#s-cond .chip').forEach(c=>c.addEventListener('click',()=>{ toggle(s.conditions,c.dataset.v); c.classList.toggle('on');
+      document.getElementById('s-other-wrap').style.display=s.conditions.includes('Other')?'':'none';
+      document.getElementById('s-uu-wrap').style.display=s.conditions.includes(m.uuCondition)?'':'none'; }));
+    document.querySelectorAll('#s-emoji button').forEach(b=>b.addEventListener('click',()=>{ s.photoEmoji=b.dataset.e; document.querySelectorAll('#s-emoji button').forEach(x=>x.classList.remove('on')); b.classList.add('on'); }));
+    document.getElementById('s-submit').addEventListener('click',submitSignup);
+  }
+  function submitSignup(){
+    const s=state.data.signup; const conditions=s.conditions.slice(); const other=(document.getElementById('s-other')?.value||'').trim();
+    if (conditions.includes('Other')){ const i=conditions.indexOf('Other'); if(other) conditions[i]=other; else conditions.splice(i,1); }
+    const payload={ displayName:document.getElementById('s-name').value.trim(), email:document.getElementById('s-email').value.trim(),
+      password:document.getElementById('s-pass').value, birthdate:document.getElementById('s-dob').value, gender:document.getElementById('s-gender').value,
+      pronouns:document.getElementById('s-pron').value, orientation:document.getElementById('s-orient').value, seeking:s.seeking, conditions,
+      undetectable:document.getElementById('s-uu')?.checked||false, interests:s.interests, lookingFor:s.lookingFor,
+      location:document.getElementById('s-loc').value.trim(), bio:document.getElementById('s-bio').value.trim(), photoEmoji:s.photoEmoji,
+      ageConfirm:document.getElementById('s-age').checked };
+    try{ const {user}=api('/auth/register',{method:'POST',body:payload}); state.user=user; state.data.signup=null; state.screen='home'; render(); }
+    catch(e){ showErr('err',e.message); }
+  }
+  function showErr(id,msg){ const el=document.getElementById(id); if(el) el.innerHTML=`<div class="error">${esc(msg)}</div>`; }
+
+  // Home
+  function renderHome(s){
+    const dash=api('/dashboard'), comm=api('/community'); const st=dash.stats; const spot=comm.resources[0];
+    s.innerHTML=`<div class="greet-card"><h2>Good day, ${esc(dash.displayName)} 👋</h2><p>Ready to make a meaningful connection?</p><button class="btn" data-explore>Explore Matches</button></div>
+      <div class="stat-row">${stat('❤️',st.whoLikesYou,'Who Likes You','discover')}${stat('💜',st.matches,'Matches','messages')}${stat('👁️',st.visitors,'Visitors',null)}${stat('👥','','Community','community')}</div>
+      <div class="section-head"><h3>Community Spotlight</h3><a data-goto="community">See all</a></div>
+      <div class="spotlight"><div class="emoji">${spot.emoji}</div><div><h4>${esc(spot.title)}</h4><p>${esc(spot.blurb)}</p></div></div>
+      <div class="section-head"><h3>Upcoming Events</h3><a data-goto="community">See all</a></div>
+      ${comm.events.slice(0,2).map(e=>`<div class="event-item"><div class="emoji">${e.emoji}</div><div><h4>${esc(e.title)}</h4><div class="when">${esc(e.date)}</div><div class="blurb">${esc(e.blurb)}</div></div></div>`).join('')}`;
+    s.querySelector('[data-explore]').addEventListener('click',()=>go('discover'));
+    s.querySelectorAll('[data-goto]').forEach(a=>a.addEventListener('click',()=>go(a.dataset.goto)));
+    s.querySelectorAll('[data-stat]').forEach(el=>el.addEventListener('click',()=>{ if(el.dataset.stat) go(el.dataset.stat); }));
+  }
+  function stat(ic,num,lbl,nav){ return `<div class="stat" data-stat="${nav||''}" style="${nav?'cursor:pointer':''}"><div class="ic">${ic}</div><div class="num">${num===''?'›':num}</div><div class="lbl">${lbl}</div></div>`; }
+
+  // Discover
+  function renderDiscover(s){ const {candidates}=api('/discovery'); state.data.deck=candidates; state.data.deckIdx=0; paintCard(s); }
+  function paintCard(s){
+    const deck=state.data.deck||[]; const idx=state.data.deckIdx||0;
+    if (idx>=deck.length){ s.innerHTML=`<div class="empty"><div class="big">🌙</div><h2>That's everyone for now</h2><p>You've seen all the members that match your preferences.<br/>New people join every day — check back soon.</p><button class="btn ghost" data-refresh>Refresh</button></div>`;
+      s.querySelector('[data-refresh]').addEventListener('click',()=>renderDiscover(s)); return; }
+    const p=deck[idx]; const uu=p.undetectable?`<span class="pill-uu">💚 U=U</span>`:'';
+    s.innerHTML=`<div class="pcard"><div class="photo">${esc(p.photoEmoji)}<div class="top-badges">${p.verified?`<span class="badge-soft">✔︎ Verified</span>`:'<span></span>'}<span class="badge-soft">${idx+1}/${deck.length}</span></div></div>
+      <div class="info"><div class="name">${esc(p.displayName)}, ${p.age} ${vMark(p.verified)}</div>
+      <div class="sub">${[p.pronouns,p.gender].filter(Boolean).map(esc).join(' · ')}${p.orientation?' · '+esc(p.orientation):''}</div>
+      <div class="sub">${p.location?'📍 '+esc(p.location):''}</div>
+      <div class="status-line">${p.conditions.map(c=>`<span class="tag">💬 ${esc(c)}</span>`).join('')} ${uu}</div>
+      ${p.bio?`<div class="block-label">About</div><div class="bio">${esc(p.bio)}</div>`:''}
+      ${p.lookingFor.length?`<div class="block-label">Looking for</div><div class="chips">${p.lookingFor.map(l=>`<span class="chip on">${esc(l)}</span>`).join('')}</div>`:''}
+      ${p.interests.length?`<div class="block-label">Interests</div><div>${p.interests.map(i=>`<span class="tag interest">${esc(i)}</span>`).join('')}</div>`:''}</div></div>
+      <div class="actions"><button class="circle-btn pass" data-act="pass" title="Pass">✕</button><button class="circle-btn like" data-act="like" title="Like">♥</button></div>`;
+    s.querySelector('[data-act="pass"]').addEventListener('click',()=>act(s,p,true));
+    s.querySelector('[data-act="like"]').addEventListener('click',()=>act(s,p,false));
+  }
+  function act(s,p,pass){ try{ const {matched,matchUser}=api('/likes',{method:'POST',body:{userId:p.id,pass}}); state.data.deckIdx=(state.data.deckIdx||0)+1; if(matched&&matchUser) showMatchModal(matchUser); }catch(e){ state.data.deckIdx=(state.data.deckIdx||0)+1; } paintCard(s); }
+  function showMatchModal(m){
+    const icons={Hiking:'🥾',Coffee:'☕',Music:'🎵',Art:'🎨',Yoga:'🧘',Cooking:'🍳',Travel:'✈️',Gaming:'🎮'};
+    const o=document.createElement('div'); o.className='overlay';
+    o.innerHTML=`<div class="match-modal"><h2>It's a Match! 💜</h2><p style="color:var(--muted);margin:0">You and ${esc(m.displayName)} liked each other.</p>
+      <div class="match-avatars"><div class="av">${esc(state.user.photoEmoji)}</div><div class="heart">💜</div><div class="av">${esc(m.photoEmoji)}</div></div>
+      ${(m.sharedInterests&&m.sharedInterests.length)?`<div class="shared">${m.sharedInterests.slice(0,3).map(i=>`<div class="item"><div class="b">${icons[i]||'✨'}</div>You both like ${esc(i)}</div>`).join('')}</div>`:''}
+      <button class="btn block" data-msg>Send a Message</button><button class="btn ghost block" style="margin-top:10px" data-keep>Keep Swiping</button></div>`;
+    document.body.appendChild(o);
+    o.querySelector('[data-keep]').addEventListener('click',()=>o.remove());
+    o.querySelector('[data-msg]').addEventListener('click',()=>{ o.remove(); state.screen='messages'; state.chatWith=m.id; render(); });
+    o.addEventListener('click',e=>{ if(e.target===o) o.remove(); });
+  }
+
+  // Community
+  function renderCommunity(s){ const c=api('/community');
+    s.innerHTML=`<h2 style="margin:2px 0 4px">Community</h2><p style="color:var(--muted);margin:0 0 8px;font-size:14px">Connect beyond dating — events, groups, education &amp; support.</p>
+      <div class="section-head"><h3>Upcoming Events</h3></div>
+      ${c.events.map(e=>`<div class="event-item"><div class="emoji">${e.emoji}</div><div style="flex:1"><h4>${esc(e.title)} <span class="tag">${esc(e.tag)}</span></h4><div class="when">${esc(e.date)}</div><div class="blurb">${esc(e.blurb)}</div></div></div>`).join('')}
+      <div class="section-head"><h3>Learn &amp; Support</h3></div>
+      <div class="card-soft">${c.resources.map(r=>`<div class="res-item"><div class="emoji">${r.emoji}</div><div><h4>${esc(r.title)} <span class="tag interest">${esc(r.tag)}</span></h4><p>${esc(r.blurb)}</p></div></div>`).join('')}</div>
+      <div class="section-head"><h3>Groups</h3></div>
+      <div class="group-row">${c.groups.map(g=>`<div class="group"><div class="emoji">${g.emoji}</div><div><div class="name">${esc(g.name)}</div><div class="cnt">${g.members.toLocaleString()} members</div></div></div>`).join('')}</div>`;
+  }
+
+  // Messages
+  function renderMessages(s){
+    if (state.chatWith) return renderThread(s, state.chatWith);
+    const {matches}=api('/matches');
+    if (!matches.length){ s.innerHTML=`<div class="empty"><div class="big">💬</div><h2>No conversations yet</h2><p>When you and someone both like each other, you can chat here.</p><button class="btn" data-disc>Start discovering</button></div>`;
+      s.querySelector('[data-disc]').addEventListener('click',()=>go('discover')); return; }
+    const q=state.data.msgSearch||''; const f=matches.filter(m=>m.displayName.toLowerCase().includes(q.toLowerCase()));
+    s.innerHTML=`<h2 style="margin:2px 0 12px">Messages</h2>
+      <div class="stories">${matches.map(m=>`<button class="story" data-open="${m.id}"><div class="ring"><div class="inner">${esc(m.photoEmoji)}</div></div><div class="lbl">${esc(m.displayName)}</div></button>`).join('')}</div>
+      <div class="search-box"><span class="mag">🔍</span><input id="msg-search" placeholder="Search messages" value="${esc(q)}"/></div>
+      <div id="conv-list">${f.map(convRow).join('')||'<div class="empty">No matches found.</div>'}</div>`;
+    const search=document.getElementById('msg-search');
+    search.addEventListener('input',()=>{ state.data.msgSearch=search.value; const list=document.getElementById('conv-list');
+      const ff=matches.filter(m=>m.displayName.toLowerCase().includes(search.value.toLowerCase())); list.innerHTML=ff.map(convRow).join('')||'<div class="empty">No matches found.</div>'; wireConvs(s); });
+    wireConvs(s);
+  }
+  function convRow(m){ return `<button class="conv" data-open="${m.id}"><div class="av">${esc(m.photoEmoji)}</div><div style="min-width:0"><div class="who">${esc(m.displayName)} ${vMark(m.verified)}</div><div class="snippet">${m.lastMessage?esc(m.lastMessage):'Say hello 👋'}</div></div><div class="meta"><div class="time">${m.lastMessageAt?timeAgo(m.lastMessageAt):''}</div>${m.unread?`<div class="unread">${m.unread}</div>`:''}</div></button>`; }
+  function wireConvs(s){ s.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>{ state.chatWith=Number(b.dataset.open); renderMessages(s); })); }
+  function renderThread(s,otherId){
+    const {matches}=api('/matches'); const m=matches.find(x=>x.id===otherId); if(!m){ state.chatWith=null; return renderMessages(s); }
+    s.innerHTML=`<div class="chat-head"><button class="icon-btn" data-back>‹</button><div class="av">${esc(m.photoEmoji)}</div><div><b>${esc(m.displayName)}, ${m.age}</b> ${vMark(m.verified)}<div style="font-size:12px;color:var(--muted)">${m.conditions.map(esc).join(' · ')}${m.undetectable?' · 💚 U=U':''}</div></div></div>
+      <div class="messages" id="messages"></div>
+      <form class="chat-input" id="chat-form"><input id="chat-text" placeholder="Write a message…" autocomplete="off" maxlength="2000"/><button class="btn" type="submit">Send</button></form>`;
+    s.querySelector('[data-back]').addEventListener('click',()=>{ state.chatWith=null; renderMessages(s); });
+    loadMessages(otherId);
+    document.getElementById('chat-form').addEventListener('submit',e=>{ e.preventDefault(); const input=document.getElementById('chat-text'); const b=input.value.trim(); if(!b) return; input.value=''; try{ api('/messages/'+otherId,{method:'POST',body:{body:b}}); loadMessages(otherId); }catch(err){} });
+  }
+  function loadMessages(otherId){ const box=document.getElementById('messages'); if(!box) return;
+    const {messages}=api('/messages/'+otherId);
+    box.innerHTML=messages.length?messages.map(mm=>`<div class="bubble ${mm.fromMe?'me':'them'}">${esc(mm.body)}</div>`).join(''):`<div style="margin:auto;text-align:center;color:var(--muted)">This is the start of your conversation.<br/>Break the ice 💜</div>`;
+    box.scrollTop=box.scrollHeight;
+  }
+
+  // Profile
+  function renderProfile(s){
+    const u=state.user; const m=state.meta;
+    const ed=state.data.edit={seeking:u.seeking.slice(),conditions:u.conditions.slice(),interests:u.interests.slice(),lookingFor:u.lookingFor.slice(),photoEmoji:u.photoEmoji,undetectable:u.undetectable};
+    const emojis=['🙂','😊','😎','🥰','🌻','🦋','🌈','🔥','🎧','📚','🌙','🐱'];
+    s.innerHTML=`<div class="prof-hero"><div class="av">${esc(u.photoEmoji)}</div><h2 style="margin:2px 0">${esc(u.displayName)}, ${u.age} ${vMark(u.verified)}</h2>
+      <div style="color:var(--muted);font-size:13px">${[u.pronouns,u.gender].filter(Boolean).map(esc).join(' · ')}</div>
+      <div style="margin-top:8px">${u.conditions.map(c=>`<span class="tag">${esc(c)}</span>`).join('')}${u.undetectable?' <span class="pill-uu">💚 U=U</span>':''}</div></div>
+      <div id="err"></div><div id="saved"></div>
+      <label>Avatar</label><div class="emoji-picker" id="p-emoji">${emojis.map(e=>`<button type="button" class="${ed.photoEmoji===e?'on':''}" data-e="${e}">${e}</button>`).join('')}</div>
+      <label>Pronouns</label><select id="p-pron"><option value="">—</option>${m.pronouns.map(p=>`<option ${p===u.pronouns?'selected':''}>${esc(p)}</option>`).join('')}</select>
+      <label>Orientation</label><select id="p-orient"><option value="">—</option>${m.orientations.map(o=>`<option ${o===u.orientation?'selected':''}>${esc(o)}</option>`).join('')}</select>
+      <label>Open to meeting</label><div class="chips" id="p-seeking">${m.genders.map(g=>chip(g,ed.seeking.includes(g),'g')).join('')}</div>
+      <label>Health disclosure <span style="color:var(--pink)">*required</span></label><div class="chips" id="p-cond">${m.conditions.map(c=>chip(c,ed.conditions.includes(c),'c')).join('')}</div>
+      <div id="p-uu-wrap" class="toggle" style="${ed.conditions.includes(m.uuCondition)?'':'display:none'}"><input type="checkbox" id="p-uu" ${ed.undetectable?'checked':''}/><label for="p-uu" style="margin:0">I'm undetectable (U=U) 💚</label></div>
+      <label>Interests</label><div class="chips" id="p-int">${m.interests.map(i=>chip(i,ed.interests.includes(i),'i')).join('')}</div>
+      <label>I'm looking for</label><div class="chips" id="p-lf">${m.lookingFor.map(l=>chip(l,ed.lookingFor.includes(l),'l')).join('')}</div>
+      <label>Location</label><input id="p-loc" maxlength="80" value="${esc(u.location)}"/>
+      <label>About you</label><textarea id="p-bio" maxlength="600">${esc(u.bio)}</textarea>
+      <div style="height:16px"></div><button class="btn block" id="p-save">Save changes</button>
+      <button class="btn ghost block" style="margin-top:10px" id="p-logout">Log out</button>`;
+    wireChips('#p-seeking',ed.seeking); wireChips('#p-int',ed.interests); wireChips('#p-lf',ed.lookingFor);
+    s.querySelectorAll('#p-cond .chip').forEach(c=>c.addEventListener('click',()=>{ toggle(ed.conditions,c.dataset.v); c.classList.toggle('on'); document.getElementById('p-uu-wrap').style.display=ed.conditions.includes(m.uuCondition)?'':'none'; }));
+    s.querySelectorAll('#p-emoji button').forEach(b=>b.addEventListener('click',()=>{ ed.photoEmoji=b.dataset.e; s.querySelectorAll('#p-emoji button').forEach(x=>x.classList.remove('on')); b.classList.add('on'); }));
+    s.querySelector('#p-logout').addEventListener('click',()=>{ api('/auth/logout',{method:'POST'}); state.user=null; render(); });
+    s.querySelector('#p-save').addEventListener('click',()=>{ const payload={ seeking:ed.seeking, conditions:ed.conditions, interests:ed.interests, lookingFor:ed.lookingFor, photoEmoji:ed.photoEmoji, undetectable:document.getElementById('p-uu')?.checked||false, pronouns:document.getElementById('p-pron').value, orientation:document.getElementById('p-orient').value, location:document.getElementById('p-loc').value.trim(), bio:document.getElementById('p-bio').value.trim() };
+      try{ const {user}=api('/auth/me',{method:'PATCH',body:payload}); state.user=user; document.getElementById('saved').innerHTML=`<div class="notice" style="margin-top:12px">✅ Profile saved.</div>`; setTimeout(()=>renderProfile(s),600); }catch(e){ showErr('err',e.message); } });
+  }
+
+  renderLanding();
+})();
+</script>

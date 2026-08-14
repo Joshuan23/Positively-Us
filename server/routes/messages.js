@@ -21,6 +21,11 @@ router.get('/messages/:userId', requireAuth, (req, res) => {
   if (!areMatched(req.userId, otherId)) {
     return res.status(403).json({ error: 'You can only message people you have matched with.' });
   }
+  // Mark the other person's messages to me as read.
+  db.prepare(
+    `UPDATE messages SET read_at = datetime('now')
+     WHERE sender_id = ? AND receiver_id = ? AND read_at IS NULL`
+  ).run(otherId, req.userId);
   const rows = db
     .prepare(
       `SELECT id, sender_id, receiver_id, body, created_at FROM messages

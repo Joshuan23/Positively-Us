@@ -2,9 +2,11 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import db from '../db.js';
 import { signToken, setAuthCookie, clearAuthCookie, requireAuth } from '../auth.js';
-import { isAdult21, CONDITIONS, GENDERS } from '../domain.js';
+import { isAdult21, ageFromBirthdate, CONDITIONS, GENDERS, UU_CONDITION } from '../domain.js';
 
 const router = express.Router();
+
+const arr = (v) => (Array.isArray(v) ? v.filter(Boolean) : []);
 
 function publicUser(u) {
   if (!u) return null;
@@ -12,12 +14,18 @@ function publicUser(u) {
     id: u.id,
     email: u.email,
     displayName: u.display_name,
+    age: ageFromBirthdate(u.birthdate),
     gender: u.gender,
+    pronouns: u.pronouns || '',
     seeking: JSON.parse(u.seeking || '[]'),
     orientation: u.orientation,
     location: u.location,
     bio: u.bio,
     conditions: JSON.parse(u.conditions || '[]'),
+    undetectable: !!u.undetectable,
+    interests: JSON.parse(u.interests || '[]'),
+    lookingFor: JSON.parse(u.looking_for || '[]'),
+    verified: !!u.verified,
     photoEmoji: u.photo_emoji,
   };
 }
@@ -29,11 +37,15 @@ router.post('/register', (req, res) => {
     displayName,
     birthdate,
     gender,
+    pronouns = '',
     seeking,
     orientation = '',
     location = '',
     bio = '',
     conditions,
+    undetectable = false,
+    interests = [],
+    lookingFor = [],
     photoEmoji = '🙂',
     ageConfirm,
   } = req.body || {};
@@ -63,23 +75,20 @@ router.post('/register', (req, res) => {
     return res.status(400).json({ error: 'Please select a valid gender.' });
   }
 
-  const seekingArr = Array.isArray(seeking) ? seeking : [];
+  const seekingArr = arr(seeking);
   if (seekingArr.length === 0) {
     return res.status(400).json({ error: 'Please choose who you are open to meeting.' });
   }
 
   // Health disclosure is REQUIRED — core to the platform's purpose.
-  const conditionsArr = Array.isArray(conditions) ? conditions.filter(Boolean) : [];
+  const conditionsArr = arr(conditions);
   if (conditionsArr.length === 0) {
     return res.status(400).json({
       error:
-        'Disclosure is required. Please share at least one condition (or your own note) so members can make informed, respectful choices.',
+        'Disclosure is required. Please share at least one status (or your own note) so members can make informed, respectful choices.',
     });
   }
-  const invalid = conditionsArr.filter(
-    (c) => !CONDITIONS.includes(c) && c.length > 60
-  );
-  if (invalid.length) {
+  if (conditionsArr.some((c) => !CONDITIONS.includes(c) && c.length > 60)) {
     return res.status(400).json({ error: 'A disclosure entry is too long.' });
   }
 
@@ -88,13 +97,14 @@ router.post('/register', (req, res) => {
     return res.status(409).json({ error: 'An account with that email already exists.' });
   }
 
+  const uu = conditionsArr.includes(UU_CONDITION) && undetectable ? 1 : 0;
   const hash = bcrypt.hashSync(String(password), 10);
   const info = db
     .prepare(
       `INSERT INTO users
-        (email, password_hash, display_name, birthdate, gender, seeking,
-         orientation, location, bio, conditions, photo_emoji)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+        (email, password_hash, display_name, birthdate, gender, pronouns, seeking,
+         orientation, location, bio, conditions, undetectable, interests, looking_for, photo_emoji)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     )
     .run(
       email.toLowerCase(),
@@ -102,11 +112,15 @@ router.post('/register', (req, res) => {
       String(displayName).slice(0, 40),
       birthdate,
       gender,
+      String(pronouns).slice(0, 20),
       JSON.stringify(seekingArr),
       String(orientation).slice(0, 40),
       String(location).slice(0, 80),
       String(bio).slice(0, 600),
       JSON.stringify(conditionsArr),
+      uu,
+      JSON.stringify(arr(interests).slice(0, 12)),
+      JSON.stringify(arr(lookingFor).slice(0, 6)),
       String(photoEmoji).slice(0, 8) || '🙂'
     );
 
@@ -142,40 +156,52 @@ router.get('/me', requireAuth, (req, res) => {
 });
 
 router.patch('/me', requireAuth, (req, res) => {
-  const { bio, location, orientation, seeking, conditions, photoEmoji } = req.body || {};
+  const b = req.body || {};
   const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.userId);
   if (!user) return res.status(404).json({ error: 'User not found.' });
 
   // Disclosure remains required — can be edited but not emptied.
   let conditionsJson = user.conditions;
-  if (conditions !== undefined) {
-    const arr = Array.isArray(conditions) ? conditions.filter(Boolean) : [];
-    if (arr.length === 0) {
+  if (b.conditions !== undefined) {
+    const c = arr(b.conditions);
+    if (c.length === 0) {
       return res.status(400).json({ error: 'Disclosure cannot be removed entirely.' });
     }
-    conditionsJson = JSON.stringify(arr);
+    conditionsJson = JSON.stringify(c);
   }
+  const conditionsNow = JSON.parse(conditionsJson);
 
   let seekingJson = user.seeking;
-  if (seeking !== undefined) {
-    const arr = Array.isArray(seeking) ? seeking : [];
-    if (arr.length === 0) {
+  if (b.seeking !== undefined) {
+    const s = arr(b.seeking);
+    if (s.length === 0) {
       return res.status(400).json({ error: 'Please choose who you are open to meeting.' });
     }
-    seekingJson = JSON.stringify(arr);
+    seekingJson = JSON.stringify(s);
   }
+
+  const uu =
+    (b.undetectable !== undefined ? !!b.undetectable : !!user.undetectable) &&
+    conditionsNow.includes(UU_CONDITION)
+      ? 1
+      : 0;
 
   db.prepare(
     `UPDATE users SET
-       bio = ?, location = ?, orientation = ?, seeking = ?, conditions = ?, photo_emoji = ?
+       bio = ?, location = ?, orientation = ?, pronouns = ?, seeking = ?, conditions = ?,
+       undetectable = ?, interests = ?, looking_for = ?, photo_emoji = ?
      WHERE id = ?`
   ).run(
-    bio !== undefined ? String(bio).slice(0, 600) : user.bio,
-    location !== undefined ? String(location).slice(0, 80) : user.location,
-    orientation !== undefined ? String(orientation).slice(0, 40) : user.orientation,
+    b.bio !== undefined ? String(b.bio).slice(0, 600) : user.bio,
+    b.location !== undefined ? String(b.location).slice(0, 80) : user.location,
+    b.orientation !== undefined ? String(b.orientation).slice(0, 40) : user.orientation,
+    b.pronouns !== undefined ? String(b.pronouns).slice(0, 20) : user.pronouns,
     seekingJson,
     conditionsJson,
-    photoEmoji !== undefined ? String(photoEmoji).slice(0, 8) || '🙂' : user.photo_emoji,
+    uu,
+    b.interests !== undefined ? JSON.stringify(arr(b.interests).slice(0, 12)) : user.interests,
+    b.lookingFor !== undefined ? JSON.stringify(arr(b.lookingFor).slice(0, 6)) : user.looking_for,
+    b.photoEmoji !== undefined ? String(b.photoEmoji).slice(0, 8) || '🙂' : user.photo_emoji,
     req.userId
   );
 

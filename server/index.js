@@ -8,7 +8,17 @@ import { router as authRouter } from './routes/auth.js';
 import discoveryRouter from './routes/discovery.js';
 import matchesRouter from './routes/matches.js';
 import messagesRouter from './routes/messages.js';
-import { CONDITIONS, GENDERS, MIN_AGE } from './domain.js';
+import communityRouter from './routes/community.js';
+import {
+  CONDITIONS,
+  GENDERS,
+  PRONOUNS,
+  ORIENTATIONS,
+  INTERESTS,
+  LOOKING_FOR,
+  UU_CONDITION,
+  MIN_AGE,
+} from './domain.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -25,15 +35,25 @@ const authLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-// Public metadata used to build the signup form (condition list, genders, age).
+// Public metadata used to build the signup/profile forms.
 app.get('/api/meta', (req, res) => {
-  res.json({ conditions: CONDITIONS, genders: GENDERS, minAge: MIN_AGE });
+  res.json({
+    conditions: CONDITIONS,
+    genders: GENDERS,
+    pronouns: PRONOUNS,
+    orientations: ORIENTATIONS,
+    interests: INTERESTS,
+    lookingFor: LOOKING_FOR,
+    uuCondition: UU_CONDITION,
+    minAge: MIN_AGE,
+  });
 });
 
 app.use('/api/auth', authLimiter, authRouter);
 app.use('/api', discoveryRouter);
 app.use('/api', matchesRouter);
 app.use('/api', messagesRouter);
+app.use('/api', communityRouter);
 
 // Serve the static single-page frontend.
 app.use(express.static(path.join(__dirname, '..', 'public')));

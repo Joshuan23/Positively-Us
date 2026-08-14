@@ -23,10 +23,20 @@ no guessing — just people meeting people.
 - Signup with a **21+ age gate** (explicit confirmation **and** birthdate check)
 - **Required, structured health disclosure** from a curated condition list, plus
   a free-text "Other" option
-- Swipe-style discovery that respects mutual gender preferences
-- Mutual-like matching
-- Match-gated one-to-one messaging
-- Editable profile (bio, location, avatar, preferences, disclosure)
+- **U=U (Undetectable = Untransmittable)** status for members living with HIV,
+  shown as a badge across the app
+- Rich profiles: pronouns, orientation, interests, "looking for", verified badge,
+  and an avatar
+- **Home dashboard** with a greeting, live stats (who likes you, matches,
+  visitors), a Community Spotlight and upcoming events
+- Swipe-style **Discover** that respects mutual gender preferences
+- Mutual-like matching with an **"It's a Match!"** celebration that surfaces
+  shared interests
+- Match-gated one-to-one **messaging** with a stories row, search, unread badges,
+  and read receipts
+- A **Community** section: events, HIV/U=U education & support resources, and groups
+- Mobile-app UI: deep-navy theme, pink→purple gradient, dual-heart logo, and a
+  bottom navigation bar (Home · Discover · Community · Messages · Profile)
 
 ## Tech
 
@@ -57,9 +67,10 @@ server/
   seed.js           Demo data
   routes/
     auth.js         register / login / logout / me / update
-    discovery.js    candidate feed (preference-aware)
-    matches.js      like / pass / mutual matches
-    messages.js     match-gated messaging
+    discovery.js    candidate feed (preference-aware) + home dashboard stats
+    matches.js      like / pass / mutual matches / shared interests
+    messages.js     match-gated messaging + read receipts
+    community.js    events, resources (U=U/HIV education), groups
 public/
   index.html, styles.css, app.js   the SPA
 ```

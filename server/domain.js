@@ -20,6 +20,9 @@ export const CONDITIONS = [
   'Other',
 ];
 
+// Condition(s) for which the U=U (Undetectable = Untransmittable) status applies.
+export const UU_CONDITION = 'HIV';
+
 export const GENDERS = [
   'Woman',
   'Man',
@@ -29,6 +32,33 @@ export const GENDERS = [
   'Genderfluid',
   'Agender',
   'Other',
+];
+
+export const PRONOUNS = ['she/her', 'he/him', 'they/them', 'she/they', 'he/they', 'ze/zir', 'Ask me'];
+
+export const ORIENTATIONS = [
+  'Straight',
+  'Gay',
+  'Lesbian',
+  'Bisexual',
+  'Pansexual',
+  'Queer',
+  'Asexual',
+  'Questioning',
+];
+
+export const INTERESTS = [
+  'Hiking', 'Coffee', 'Music', 'Art', 'Yoga', 'Cooking', 'Travel', 'Gaming',
+  'Reading', 'Movies', 'Fitness', 'Dogs', 'Cats', 'Photography', 'Dancing',
+  'Foodie', 'Live shows', 'Volunteering', 'Nature', 'Tech',
+];
+
+export const LOOKING_FOR = [
+  'A long-term relationship',
+  'Something casual',
+  'New friendships',
+  'Community & support',
+  'Still figuring it out',
 ];
 
 export function ageFromBirthdate(birthdate) {
